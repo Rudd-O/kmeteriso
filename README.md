@@ -4,6 +4,10 @@ This project integrates the
 [KMeterISO sensor from M5Stack](https://docs.m5stack.com/en/unit/KMeterISO%20Unit)
 into ESPHome.
 
+Note: this component may soon be available directly in ESPHome:
+https://github.com/esphome/esphome/pull/5170 .  As such, the
+repository will be archived once that is the case.
+
 ## How do I program my ESPHome device to use the sensor?
 
 Use your own version of this sample ESPHome sketch:
