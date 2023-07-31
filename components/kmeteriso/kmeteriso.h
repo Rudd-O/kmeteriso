@@ -14,7 +14,8 @@ namespace esphome
         class KMeterISOComponent : public PollingComponent, public i2c::I2CDevice
         {
         public:
-            void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
+            void set_temperature_sensor(sensor::Sensor *t) { temperature_sensor_ = t; }
+            void set_internal_temperature_sensor(sensor::Sensor *t) { internal_temperature_sensor_ = t; }
 
             // ========== INTERNAL METHODS ==========
             // (In most use cases you won't need these)
@@ -27,6 +28,7 @@ namespace esphome
             float read_temperature_(const uint8_t *data, int32_t *t_fine);
 
             sensor::Sensor *temperature_sensor_{nullptr};
+            sensor::Sensor *internal_temperature_sensor_{nullptr};
             enum ErrorCode
             {
                 NONE = 0,

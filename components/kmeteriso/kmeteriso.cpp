@@ -11,6 +11,7 @@ namespace esphome
 
         static const uint8_t KMETER_KMETER_ERROR_STATUS_REG = 0x20;
         static const uint8_t KMETER_TEMP_VAL_REG = 0x00;
+        static const uint8_t KMETER_INTERNAL_TEMP_VAL_REG = 0x10;
         static const uint8_t KMETER_FIRMWARE_VERSION_REG = 0xFE;
 
         void KMeterISOComponent::setup()
@@ -62,18 +63,35 @@ namespace esphome
         void KMeterISOComponent::update()
         {
             uint8_t read_buf[4];
+
             if (!this->read_bytes(KMETER_TEMP_VAL_REG, read_buf, 4))
             {
                 ESP_LOGW(TAG, "Error reading temperature.");
+            }
+            else
+            {
+                int32_t temp = (read_buf[3] << 24) | (read_buf[2] << 16) | (read_buf[1] << 8) |
+                               read_buf[0];
+                float temp_f = temp / 100.0;
+                ESP_LOGV(TAG, "Got temperature=%.2f °C", temp_f);
+                if (this->temperature_sensor_ != nullptr)
+                    this->temperature_sensor_->publish_state(temp_f);
+            }
+
+            if (!this->read_bytes(KMETER_INTERNAL_TEMP_VAL_REG, read_buf, 4))
+            {
+                ESP_LOGW(TAG, "Error reading internal temperature.");
                 return;
             }
-            int32_t temp = (read_buf[3] << 24) | (read_buf[2] << 16) | (read_buf[1] << 8) |
-                           read_buf[0];
-            float temp_f = temp / 100.0;
-
-            ESP_LOGV(TAG, "Got temperature=%.2f °C (setup error code %d)", temp_f, this->error_code_);
-            if (this->temperature_sensor_ != nullptr)
-                this->temperature_sensor_->publish_state(temp_f);
+            else
+            {
+                ESP_LOGV(TAG, "Got internal temperature=%.2f °C", internal_temp_f);
+                int32_t internal_temp = (read_buf[3] << 24) | (read_buf[2] << 16) | (read_buf[1] << 8) |
+                                        read_buf[0];
+                float internal_temp_f = internal_temp / 100.0;
+                if (this->internal_temperature_sensor_ != nullptr)
+                    this->internal_temperature_sensor_->publish_state(internal_temp_f);
+            }
         }
 
     } // namespace bme280

@@ -7,8 +7,10 @@ from esphome.const import (
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
+    ENTITY_CATEGORY_DIAGNOSTIC,
 )
 
+CONF_INTERNAL_TEMPERATURE = "internal_temperature"
 DEPENDENCIES = ["i2c"]
 
 kmeteriso_ns = cg.esphome_ns.namespace("kmeteriso")
@@ -23,7 +25,12 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(KMeterISOComponent),
             cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=1,
+                accuracy_decimals=2,
+                device_class=DEVICE_CLASS_TEMPERATURE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_INTERNAL_TEMPERATURE): sensor.sensor_schema(
+                unit_of_measurement=UNIT_CELSIUS,
                 device_class=DEVICE_CLASS_TEMPERATURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
@@ -45,3 +52,7 @@ async def to_code(config):
         conf = config[CONF_TEMPERATURE]
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_temperature_sensor(sens))
+    if CONF_INTERNAL_TEMPERATURE in config:
+        conf = config[CONF_INTERNAL_TEMPERATURE]
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_internal_temperature_sensor(sens))

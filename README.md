@@ -61,7 +61,11 @@ i2c:
 
 sensor:
 - platform: kmeteriso
-  name: KMeterISO
+  temperature:
+    name: Temperature
+  internal_temperature:
+    name: Internal temperature
+    entity_category: diagnostic
 - platform: wifi_signal
   name: "Wi-Fi signal strength"
   update_interval: 10s
