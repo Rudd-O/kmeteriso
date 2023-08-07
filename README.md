@@ -1,5 +1,10 @@
 # KMeterISO support for ESPHome
 
+**This project is now mothballed, because the ESPHome
+project has accepted it as a contribution.  Please
+just use the latest stable release of ESPHome if you
+want to use your KMeterISO device with an ESP32 chip.**
+
 This project integrates the
 [KMeterISO sensor from M5Stack](https://docs.m5stack.com/en/unit/KMeterISO%20Unit)
 into ESPHome.
