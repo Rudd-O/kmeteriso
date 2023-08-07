@@ -33,13 +33,12 @@ CONFIG_SCHEMA = (
                 unit_of_measurement=UNIT_CELSIUS,
                 device_class=DEVICE_CLASS_TEMPERATURE,
                 state_class=STATE_CLASS_MEASUREMENT,
+                entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             ),
         }
     )
-    .extend(cv.polling_component_schema("5s"))
+    .extend(cv.polling_component_schema("60s"))
     .extend(i2c.i2c_device_schema(0x66))
-    # Unsure how the polling frequency could be dynamically
-    # changed by the end user of this component.
 )
 
 
@@ -48,11 +47,9 @@ async def to_code(config):
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
 
-    if CONF_TEMPERATURE in config:
-        conf = config[CONF_TEMPERATURE]
-        sens = await sensor.new_sensor(conf)
+    if temperature_config := config.get(CONF_TEMPERATURE):
+        sens = await sensor.new_sensor(temperature_config)
         cg.add(var.set_temperature_sensor(sens))
-    if CONF_INTERNAL_TEMPERATURE in config:
-        conf = config[CONF_INTERNAL_TEMPERATURE]
-        sens = await sensor.new_sensor(conf)
+    if internal_temperature_config := config.get(CONF_INTERNAL_TEMPERATURE):
+        sens = await sensor.new_sensor(internal_temperature_config)
         cg.add(var.set_internal_temperature_sensor(sens))
